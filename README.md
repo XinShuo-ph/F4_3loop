@@ -3,7 +3,7 @@
 Repository for F4 3-loop calculations on Sherlock cluster.
 
 ## Dependancy
-To use Mathematica on Sherlock, `module load mathematica`. Mathematica may fill the home dir with GBs of tmp files, check `du -h -d 2 ~/.Mathematica` when things fail. To change the tmp dir, write `$TemporaryDirectory = "/oak/stanford/orgs/kipac/users/xinshuo/Mathematica_cache/Temp";` to `~/.Mathematica/Kernel/init.m`.
+To use Mathematica on Sherlock, `module load mathematica`. Mathematica may fill the home dir with GBs of tmp files, check `du -h -d 2 ~/.Mathematica` when things fail. To change the Mathematica user base dir, add `export MATHEMATICA_USERBASE="/oak/stanford/orgs/kipac/users/xinshuo/Mathematica_cache"` to `~/.bashrc`.
 
 ### Ginsh
 This is only needed if we want numerical evaluations in PolyLogTools.

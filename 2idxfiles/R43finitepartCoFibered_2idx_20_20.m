@@ -1,5 +1,5 @@
-time1 = {0.002992, Null}
-time2 = {0.000019, Null}
-time3 = {0.000154, Null}
-time4 = {0.000098, Null}
+time1 = {0.002625, Null}
+time2 = {0.000018, Null}
+time3 = {0.000152, Null}
+time4 = {0.00009, Null}
 mytmp3 = 0

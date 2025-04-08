@@ -1,7 +1,7 @@
-time1 = {3.748033, Null}
-time2 = {8.12835, Null}
-time3 = {3.766823, Null}
-time4 = {5.13414, Null}
+time1 = {3.720456, Null}
+time2 = {8.099136, Null}
+time3 = {3.761595, Null}
+time4 = {5.121196, Null}
 mytmp3 = -2*G[1, v2]*G[v2, u3]*G[0, 0, v1] + 2*G[1, v2]*G[v2 - v1*v2, u3]*
       G[0, 0, v1] + 2*G[0, v1]*G[1 - v1, u3]*G[0, 0, v2] - 
      4*G[1, v1]*G[1 - v1, u3]*G[0, 0, v2] - G[0, v1]*G[-1 + v2, u3]*
