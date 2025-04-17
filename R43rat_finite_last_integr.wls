@@ -71,7 +71,7 @@ R43finitepart = Sum[tmp[idx], {idx, 22}];
 R43finitepartexpand = R43finitepart//Expand;
 
 (* check the derivative*)
-(* v1 *)
+(* v2 *)
 tmpderiv = 
    Sum[R43finitepartCoFibered$1idx[x[idx2]]*
       DlogxDvar[x[idx2], v2], {idx2, xletts // Length}] - 
@@ -82,7 +82,7 @@ expandedderiv // Length//Print;
 expandedderiv[[0]] = List;
 
 (dic = simplifySum[expandedderiv]); // AbsoluteTiming//Print;
-Print[dic] (* Should be 0? checked locally*)
+Print[dic]; (* Should be 0? checked locally*)
 
 If[ ("result"/.dic) == 0, {
 

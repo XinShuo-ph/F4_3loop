@@ -75,7 +75,7 @@ Print[lastentries = secondArgs//Union   ];
 
 <<"xletts.m" ;
 Print["Extracting coproducts",DateString[]];
-Table[Co[x[idx]] = tmp/.CT[a_,b_]/;b==CiTi[x[idx]/.xletts]:>a/.CT[a_,b_]/;b==CiTi[-x[idx]/.xletts]:>a/._CT:>0;//AbsoluteTiming//Print, {idx,20}] ;
+Table[Co[x[idx]] = tmp/.CT[a_,b_]/;b==CiTi[x[idx]/.xletts]:>a/.CT[a_,b_]/;b==CiTi[-x[idx]/.xletts]:>a/._CT:>0;//AbsoluteTiming//Print, {idx,22}] ;
 Table[x[idx] -> (Co[x[idx]]//Length),{idx,20}]//Print;
 Print["Checking relations",DateString[]]
 Print[Co[x[1]] + Co[x[3]] + Co[x[10]] + Co[x[11]] + Co[x[13]] + Co[x[15]]//Expand];
@@ -151,9 +151,85 @@ R43ansatz = Sum[Sum[vtmp[idx][[idx2]] * kintegratedtmp[idx][[idx2]] ,{idx2,kinte
 R43ansatz>>"R43ansatz.m";
 
 (* next, simplify the ansatz a bit, by collectTerms *)
-(* note that the size of the ansatz is huge, but it doesn't contain too many G functions (approximately same as R43candidate). The size comes from big sums of prefactors of c[] constants. we can iterate over kintegratedtmp and vtmp, record the bug sums, replace them as placeholders, then collectTerms, then recover the place holder and expand the prefactors. Hopefully a lot of them will cancel. Then again record the big c[] sums in final expression. put placeholders. check v1, v2 derivatives with placeholders implicit. *)
+(* note that the size of the ansatz is huge, but it doesn't contain too many G functions (approximately same as R43candidate). The size comes from big sums of prefactors of c[] constants. we can iterate over kintegratedtmp and vtmp, record the big sums, replace them as placeholders, then collectTerms, then recover the place holder and expand the prefactors. Hopefully a lot of them will cancel. Then again record the big c[] sums in final expression. put placeholders. check v1, v2 derivatives with placeholders implicit. *)
 
 
 R43ansatzList = R43ansatz;
 R43ansatzList[[0]] = List;
 dic = collectTerms[R43ansatzList]; //AbsoluteTiming//Print;
+
+
+k = dic//Keys;
+v = dic//Values;
+
+R43ansatzHolder = Sum[Times[vh[idx],Sequence@@k[[idx]]],{idx,k//Length}]; (*  vh = Values Holder *)
+
+
+
+Print["Checking v2 derivative ",DateString[]];
+Print["  DG"];
+tmpv2 = DG[R43ansatzHolder,v2]; //AbsoluteTiming//Print;
+Print["  expand"];
+tmpv2List = tmpv2//Expand;//AbsoluteTiming//Print;
+tmpv2List[[0]] = List;
+Print["  collect"]
+tmpv2dic = collectTerms[tmpv2List];//AbsoluteTiming//Print;
+tmpv2dick = tmpv2dic//Keys;
+tmpv2dicv = tmpv2dic//Values;
+tmpv2collect = Sum[Times[tmpv2dicv[[idx]] , Sequence@@tmpv2dick[[idx]]] , {idx,tmpv2dick//Length}];  (* note, Times[Sequence@@key] will recover the product represented by the dict's key *)
+
+Print["  buuilding the target"]
+targetv2 = Sum[Sum[ Times[ vtmp[idx][[idx2]], DlogxDvar[x[idx], v2] , Sequence@@ktmp[idx][[idx2]] ] ,{idx2,ktmp[idx]//Length}], {idx, 22}];//AbsoluteTiming//Print;
+
+diff = targetv2 - tmpv2collect;
+diff[[0]] = List;
+Print["  collect diff"]
+diffdic = collectTerms[diff];//AbsoluteTiming//Print;
+diffdicv = diffdic//Values;
+diffdick = diffdic//Keys;
+
+(* then we need to recover the vh and process this large list of values*)
+(* This is just basic algebra, but is too time consuming, let's do it in parallel using another script *)
+(* dump the necessary variables*)
+
+Print["  dumping variables ",DateString[]];
+If[!DirectoryQ["tmp_ansatz_deriv_v2"], CreateDirectory["tmp_ansatz_deriv_v2"]];
+v>>"tmp_ansatz_deriv_v2/v.m";//AbsoluteTiming//Print;
+diffdick>>"tmp_ansatz_deriv_v2/diffdick.m";//AbsoluteTiming//Print;
+diffdicv>>"tmp_ansatz_deriv_v2/diffdicv.m";//AbsoluteTiming//Print;
+
+
+
+
+Print["Checking v1 derivative ",DateString[]];
+Print["  DG"];
+tmpv1 = DG[R43ansatzHolder,v1]; //AbsoluteTiming//Print;
+Print["  expand"];
+tmpv1List = tmpv1//Expand;//AbsoluteTiming//Print;
+tmpv1List[[0]] = List;
+Print["  collect"]
+tmpv1dic = collectTerms[tmpv1List];//AbsoluteTiming//Print;
+tmpv1dick = tmpv1dic//Keys;
+tmpv1dicv = tmpv1dic//Values;
+tmpv1collect = Sum[Times[tmpv1dicv[[idx]] , Sequence@@tmpv1dick[[idx]]] , {idx,tmpv1dick//Length}];  (* note, Times[Sequence@@key] will recover the product represented by the dict's key *)
+
+Print["  building the target"]
+targetv1 = Sum[Sum[ Times[ vtmp[idx][[idx2]], DlogxDvar[x[idx], v1] , Sequence@@ktmp[idx][[idx2]] ] ,{idx2,ktmp[idx]//Length}], {idx, 22}];//AbsoluteTiming//Print;
+
+diff = targetv1 - tmpv1collect;
+diff[[0]] = List;
+Print["  collect diff"]
+diffdic = collectTerms[diff];//AbsoluteTiming//Print;
+diffdicv = diffdic//Values;
+diffdick = diffdic//Keys;
+
+(* then we need to recover the vh and process this large list of values*)
+(* This is just basic algebra, but is too time consuming, let's do it in parallel using another script *)
+(* dump the necessary variables*)
+
+
+Print["  dumping variables ",DateString[]];
+If[!DirectoryQ["tmp_ansatz_deriv_v1"], CreateDirectory["tmp_ansatz_deriv_v1"]];
+v>>"tmp_ansatz_deriv_v1/v.m";//AbsoluteTiming//Print;
+diffdick>>"tmp_ansatz_deriv_v1/diffdick.m";//AbsoluteTiming//Print;
+diffdicv>>"tmp_ansatz_deriv_v1/diffdicv.m";//AbsoluteTiming//Print;
