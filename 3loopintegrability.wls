@@ -100,6 +100,7 @@ Print["weight-2 Results saved to " <> outputFileName];
 (* next go on to solve general space of arbitrary weight functions*)
 (* reuse some results from weight-2*)
 adjrel = Table[rel[[1]] == rel[[2]], {rel, finalsol[[1]]}];
+adjrel>>"integrability_adjrel.m";
 (* use l[1],...,l[19] to represent letters*)
 genexprl = 
   Sum[c[i, j] ct[l[i], l[j]], {i, 
@@ -107,6 +108,7 @@ genexprl =
 integrablew2syml = genexprl /. finalsol[[1]];
 integrablew2symllist = 
   Table[Coefficient[integrablew2syml, coef], {coef, ccoefs}];
+Save[outputFileName, integrablew2symllist];
 
 genexprlw3 = 
  Sum[cc[idx, 
@@ -119,7 +121,22 @@ Coproductw3[myexpr_, idx1_,
   idx2_] := ((myexpr /. ct[seq__, l[idx1], l[idx2]] :> ct[seq]) /. 
    ct[seq__] /; Length[{seq}] == 3 :> 0);
 
+
+Print["Launch kernels ", DateString[]];
+LaunchKernels[128];
+Print["Launched kernels ", DateString[]];
+
 (* simplify adjrels *)
+collectedeqs = ParallelTable[
+   {
+      Print[relidx];
+      tmp[relidx] = (adjrel[[relidx]][[2]] - adjrel[[relidx]][[1]]) /. {c[i_, j_] :> Coproductw3[genexprlw3, i, j]};
+      ctvars[relidx] = Cases[tmp[relidx] // Variables, _ct];
+      Table[Coefficient[tmp[relidx], var] == 0, {var, ctvars[relidx]}]
+   },{relidx,adjrel//Length}
+];
+collectedeqs = collectedeqs//Flatten;//AbsoluteTiming//Print;
+collectedeqs>>"tmp_integrability_w3_eqs.m";
 (* collectedsols = Table[
    {
       Print[relidx];
@@ -138,5 +155,7 @@ integrablew3syml = genexprlw3/.sol[[1]];
 integrablew3sym = integrablew3syml/.l3repl;
 ccvars = Cases[integrablew3syml//Variables,_cc];
 integrablew3symlist = Table[Coefficient[integrablew3sym,var],{var,ccvars}];
+integrablew3symllist = Table[Coefficient[integrablew3syml,var],{var,ccvars}];
 Save[outputFileName, integrablew3symlist];
+Save[outputFileName, integrablew3symllist];
 Print["weight-3 Results saved to " <> outputFileName];
