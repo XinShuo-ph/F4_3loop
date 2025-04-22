@@ -71,7 +71,7 @@ Print["Collecting equations for weight-4 integrability, ", DateString[]];
 
 }];
 
-
+(* the longest eqs, like for relidx=38, take ~10 mins to finish*)
 collectedeqs = ParallelEvaluate[
    {
       relidx = $KernelID;
