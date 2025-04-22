@@ -1,5 +1,5 @@
-prefix=/usr/local
-exec_prefix=${prefix}
+prefix=/home/users/xinshuo/local
+exec_prefix=/home/users/xinshuo/local
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 

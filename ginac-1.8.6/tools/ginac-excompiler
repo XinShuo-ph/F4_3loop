@@ -1,0 +1,2 @@
+#!/bin/sh
+gcc -std=gnu11 -x c -fPIC -shared $CXXFLAGS -o $1.so $1
